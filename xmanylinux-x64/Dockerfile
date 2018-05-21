@@ -8,8 +8,6 @@ RUN bash fix.sh
 
 # Specific
 
-ENV XDG_CONFIG_HOME="/work"
-
 ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
 
 ENV PATH="/opt/llvm/bin:${PATH}"
@@ -81,3 +79,19 @@ RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/libxcb-1.8.1.ta
     && cd .. && rm -rf libxcb-1.8.1 && ldconfig
 
 RUN yum install -y fontconfig-devel
+
+RUN cd /opt/ \
+    && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz" -O jdk-8u171-linux-x64.tar.gz \
+    && tar xzf jdk-8u171-linux-x64.tar.gz \
+    && rm jdk-8u171-linux-x64.tar.gz
+
+ENV JAVA_HOME="/opt/jdk1.8.0_171"
+ENV JRE_HOME="/opt/jdk1.8.0_171/jre"
+ENV PATH="/opt/jdk1.8.0_171/bin:/opt/jdk1.8.0_171/jre/bin:${PATH}"
+
+RUN cd /opt \
+    && wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
+    && tar xzf apache-maven-3.3.9-bin.tar.gz \
+    && rm apache-maven-3.3.9-bin.tar.gz
+
+ENV PATH="/opt/apache-maven-3.3.9/bin:${PATH}"
