@@ -1,0 +1,27 @@
+diff -urN a/runtime/src/ompt-general.cpp b/runtime/src/ompt-general.cpp
+--- a/runtime/src/ompt-general.cpp	2017-12-21 15:36:30.000000000 +0100
++++ b/runtime/src/ompt-general.cpp	2018-05-22 07:45:24.877520423 +0200
+@@ -601,6 +601,23 @@
+ /*****************************************************************************
+  * places
+  ****************************************************************************/
++#if defined(__GLIBC_PREREQ)
++#if !__GLIBC_PREREQ(2, 6)
++static int sched_getcpu(void)
++{
++int cpu;
++FILE *fp = NULL;
++if ( (fp = fopen("/proc/self/stat", "r")) == NULL)
++   return -1;
++if ( fscanf( fp, "%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%d", &cpu) != 1) {
++  fclose (fp);
++  return -1;
++  }
++  fclose (fp);
++  return(cpu);
++}
++#endif
++#endif
+ 
+ OMPT_API_ROUTINE int ompt_get_proc_id(void) {
+ #if KMP_OS_LINUX
