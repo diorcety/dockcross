@@ -4,8 +4,8 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 set(cross_triple "x86_64-linux-gnu")
 
-set(CMAKE_C_COMPILER /opt/llvm/bin/clang)
-set(CMAKE_CXX_COMPILER /opt/llvm/bin/clang++)
+set(CMAKE_C_COMPILER /opt/llvm60/bin/clang)
+set(CMAKE_CXX_COMPILER /opt/llvm60/bin/clang++)
 set(CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER})
 set(CMAKE_Fortran_COMPILER /opt/rh/devtoolset-2/root/usr/bin/gfortran)
 

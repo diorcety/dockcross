@@ -6,20 +6,16 @@ ADD fix.sh fix.sh
 
 RUN bash fix.sh
 
-# Specific
+RUN yum -y install xz
 
 ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
-
-ENV PATH="/opt/llvm/bin:${PATH}"
-
-RUN yum -y install xz
 
 RUN wget http://releases.llvm.org/6.0.0/llvm-6.0.0.src.tar.xz \
     && xz --decompress llvm-6.0.0.src.tar.xz && tar xf llvm-6.0.0.src.tar \
     && rm llvm-6.0.0.src.tar \
     && cd llvm-6.0.0.src \
     && mkdir cbuild && cd cbuild \
-    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm -DLLVM_TARGETS_TO_BUILD="X86" \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf llvm-6.0.0.src && ldconfig
 
@@ -28,7 +24,7 @@ RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && rm cfe-6.0.0.src.tar \
     && cd cfe-6.0.0.src \
     && mkdir cbuild && cd cbuild \
-    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm -DLLVM_TARGETS_TO_BUILD="X86" \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf cfe-6.0.0.src && ldconfig
 
@@ -76,16 +72,10 @@ RUN cd /opt/ \
     && tar xzf jdk-8u171-linux-x64.tar.gz \
     && rm jdk-8u171-linux-x64.tar.gz
 
-ENV JAVA_HOME="/opt/jdk1.8.0_171"
-ENV JRE_HOME="/opt/jdk1.8.0_171/jre"
-ENV PATH="/opt/jdk1.8.0_171/bin:/opt/jdk1.8.0_171/jre/bin:${PATH}"
-
 RUN cd /opt \
     && wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
     && tar xzf apache-maven-3.3.9-bin.tar.gz \
     && rm apache-maven-3.3.9-bin.tar.gz
-
-ENV PATH="/opt/apache-maven-3.3.9/bin:${PATH}"
 
 RUN yum -y install pcre-devel
 
@@ -97,12 +87,29 @@ RUN wget --no-check-certificate http://downloads.sourceforge.net/project/swig/sw
     && make -j4 && make install \
     && cd .. && rm -rf swig-3.0.12 && ldconfig
 
-RUN rm /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/libgomp.a \
-    /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/libgomp.so \
-    /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/32/libgomp.a \
-    /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/32/libgomp.so \
-    /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/include/omp.h \
-    /opt/rh/devtoolset-2/root/usr/lib/gcc/x86_64-CentOS-linux/4.8.2/libgomp.spec
+# Reset PATH
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
+
+# Configure default environment
+ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
+ENV PATH="/opt/llvm60/bin:${PATH}"
+ENV JAVA_HOME="/opt/jdk1.8.0_171"
+ENV JRE_HOME="/opt/jdk1.8.0_171/jre"
+ENV PATH="/opt/jdk1.8.0_171/bin:/opt/jdk1.8.0_171/jre/bin:${PATH}"
+ENV PATH="/opt/apache-maven-3.3.9/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/opt/llvm60/lib:${LD_LIBRARY_PATH}"
+
+ENV CROSS_TRIPLE x86_64-linux-gnu
+ENV CROSS_ROOT /opt/llvm60/bin
+ENV AS=/usr/bin/as \
+    AR=/usr/bin/ar \
+    CC=${CROSS_ROOT}/clang \
+    CPP=${CROSS_ROOT}/clang-cpp \
+    CXX=${CROSS_ROOT}/clang++ \
+    LD=/usr/bin/ld
+COPY Toolchain.cmake ${CROSS_ROOT}/../lib/
+ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
 
 ADD 0001-openmp-6.0.0.patch /tmp/0001-openmp-6.0.0.patch
 
@@ -113,9 +120,6 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
     && patch -p1 < /tmp/0001-openmp-6.0.0.patch \
     && rm /tmp/0001-openmp-6.0.0.patch \
     && mkdir cbuild && cd cbuild \
-    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
+    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
     && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
-
-ADD Toolchain.cmake /opt/llvm/lib/Toolchain.cmake
-ENV CMAKE_TOOLCHAIN_FILE /opt/llvm/lib/Toolchain.cmake
