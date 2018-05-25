@@ -116,3 +116,6 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
     && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
+
+ADD Toolchain.cmake /opt/llvm/lib/Toolchain.cmake
+ENV CMAKE_TOOLCHAIN_FILE /opt/llvm/lib/Toolchain.cmake
