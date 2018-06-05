@@ -28,6 +28,15 @@ RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf cfe-6.0.0.src && ldconfig
 
+RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
+    && xz --decompress lld-6.0.0.src.tar.xz && tar xf lld-6.0.0.src.tar \
+    && rm lld-6.0.0.src.tar \
+    && cd lld-6.0.0.src \
+    && mkdir cbuild && cd cbuild \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 \
+    && cmake --build . -- -j4 && cmake --build . --target install \
+    && cd .. && cd .. && rm -rf lld-6.0.0.src && ldconfig
+
 RUN wget ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz \
     && tar xvf libffi-3.2.1.tar.gz \
     && rm libffi-3.2.1.tar.gz \
@@ -102,12 +111,13 @@ ENV LD_LIBRARY_PATH="/opt/llvm60/lib:${LD_LIBRARY_PATH}"
 
 ENV CROSS_TRIPLE x86_64-linux-gnu
 ENV CROSS_ROOT /opt/llvm60/bin
-ENV AS=/usr/bin/as \
-    AR=/usr/bin/ar \
+ENV AS=${CROSS_ROOT}/llvm-as \
+    AR=${CROSS_ROOT}/llvm-ar \
     CC=${CROSS_ROOT}/clang \
     CPP=${CROSS_ROOT}/clang-cpp \
     CXX=${CROSS_ROOT}/clang++ \
-    LD=/usr/bin/ld
+    LD=${CROSS_ROOT}/ld.lld \
+    LDFLAGS=-fuse-ld=lld
 COPY Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
 
@@ -123,3 +133,4 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
     && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
+
