@@ -134,3 +134,9 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
     && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
 
+RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/x86_64/xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && tar xvf xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && rm xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && cp -R xsd-4.0.0-x86_64-linux-gnu/bin/* /usr/bin \
+    && cp -R xsd-4.0.0-x86_64-linux-gnu/libxsd/* /usr/include \
+    && rm -rf xsd-4.0.0-x86_64-linux-gnu
