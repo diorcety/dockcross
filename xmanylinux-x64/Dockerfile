@@ -140,3 +140,7 @@ RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/l
     && cp -R xsd-4.0.0-x86_64-linux-gnu/bin/* /usr/bin \
     && cp -R xsd-4.0.0-x86_64-linux-gnu/libxsd/* /usr/include \
     && rm -rf xsd-4.0.0-x86_64-linux-gnu
+
+ENV CFLAGS="-march=x86-64 -mtune=generic"
+ENV CXXFLAGS="-march=x86-64 -mtune=generic"
+ENV FFLAGS="-march=x86-64 -mtune=generic"
