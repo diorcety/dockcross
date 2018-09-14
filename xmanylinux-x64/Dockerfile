@@ -10,12 +10,13 @@ RUN yum -y install xz
 
 ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
 
+# LLVM & Clang
 RUN wget http://releases.llvm.org/6.0.0/llvm-6.0.0.src.tar.xz \
     && xz --decompress llvm-6.0.0.src.tar.xz && tar xf llvm-6.0.0.src.tar \
     && rm llvm-6.0.0.src.tar \
     && cd llvm-6.0.0.src \
     && mkdir cbuild && cd cbuild \
-    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf llvm-6.0.0.src && ldconfig
 
@@ -24,7 +25,7 @@ RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && rm cfe-6.0.0.src.tar \
     && cd cfe-6.0.0.src \
     && mkdir cbuild && cd cbuild \
-    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf cfe-6.0.0.src && ldconfig
 
@@ -37,6 +38,7 @@ RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf lld-6.0.0.src && ldconfig
 
+# Missing base libraries and software
 RUN wget ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz \
     && tar xvf libffi-3.2.1.tar.gz \
     && rm libffi-3.2.1.tar.gz \
@@ -76,18 +78,21 @@ RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/libxcb-1.8.1.ta
 
 RUN yum install -y fontconfig-devel
 
-RUN cd /opt/ \
-    && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz" -O jdk-8u171-linux-x64.tar.gz \
-    && tar xzf jdk-8u171-linux-x64.tar.gz \
-    && rm jdk-8u171-linux-x64.tar.gz
+RUN yum -y install pcre-devel
 
+# Java
+RUN cd /opt/ \
+    && wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.tar.gz" -O jdk-8u181-linux-x64.tar.gz \
+    && tar xzf jdk-8u181-linux-x64.tar.gz \
+    && rm jdk-8u181-linux-x64.tar.gz
+
+# Maven
 RUN cd /opt \
-    && wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
+    && wget --no-check-certificate http://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
     && tar xzf apache-maven-3.3.9-bin.tar.gz \
     && rm apache-maven-3.3.9-bin.tar.gz
 
-RUN yum -y install pcre-devel
-
+# Swig
 RUN wget --no-check-certificate http://downloads.sourceforge.net/project/swig/swig/swig-3.0.12/swig-3.0.12.tar.gz \
     && tar xvf swig-3.0.12.tar.gz \
     && rm swig-3.0.12.tar.gz \
@@ -121,6 +126,7 @@ ENV AS=${CROSS_ROOT}/llvm-as \
 COPY Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
 
+# OpenMP
 ADD 0001-openmp-6.0.0.patch /tmp/0001-openmp-6.0.0.patch
 
 RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
@@ -134,6 +140,7 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
     && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
     && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
 
+# XSD
 RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/x86_64/xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
     && tar xvf xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
     && rm xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
