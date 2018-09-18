@@ -108,9 +108,9 @@ ENV LD_LIBRARY_PATH="/usr/local/lib:/usr/local/lib"
 # Configure default environment
 ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
 ENV PATH="/opt/llvm60/bin:${PATH}"
-ENV JAVA_HOME="/opt/jdk1.8.0_171"
-ENV JRE_HOME="/opt/jdk1.8.0_171/jre"
-ENV PATH="/opt/jdk1.8.0_171/bin:/opt/jdk1.8.0_171/jre/bin:${PATH}"
+ENV JAVA_HOME="/opt/jdk1.8.0_181"
+ENV JRE_HOME="/opt/jdk1.8.0_181/jre"
+ENV PATH="/opt/jdk1.8.0_181/bin:/opt/jdk1.8.0_181/jre/bin:${PATH}"
 ENV PATH="/opt/apache-maven-3.3.9/bin:${PATH}"
 ENV LD_LIBRARY_PATH="/opt/llvm60/lib:${LD_LIBRARY_PATH}"
 
