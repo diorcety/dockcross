@@ -12,3 +12,9 @@ set(CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER})
 set(CMAKE_Fortran_COMPILER /opt/rh/devtoolset-2/root/usr/bin/gfortran)
 
 set(CMAKE_CROSSCOMPILING_EMULATOR /usr/bin/${cross_triple}-noop)
+
+set(CMAKE_INSTALL_LIBDIR lib)
+
+set(PYTHON_EXECUTABLE /opt/python/cp27-cp27mu/bin/python)
+set(PYTHON_LIBRARY /opt/python/cp27-cp27mu/lib/python2.7)
+set(PYTHON_INCLUDE_DIR /opt/python/cp27-cp27mu/include/python2.7)
