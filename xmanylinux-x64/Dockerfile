@@ -151,3 +151,6 @@ RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/l
 ENV CFLAGS="-march=x86-64 -mtune=generic"
 ENV CXXFLAGS="-march=x86-64 -mtune=generic"
 ENV FFLAGS="-march=x86-64 -mtune=generic"
+
+# Don't run preexec
+RUN rm /dockcross/pre_exec.sh
