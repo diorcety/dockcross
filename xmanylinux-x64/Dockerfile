@@ -154,3 +154,5 @@ ENV FFLAGS="-march=x86-64 -mtune=generic"
 
 # Don't run preexec
 RUN rm /dockcross/pre_exec.sh
+
+RUN yum -y install glibc.i686 libgcc_s.so.1
