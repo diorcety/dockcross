@@ -154,3 +154,6 @@ ENV FFLAGS="-march=x86-64 -mtune=generic"
 
 # Don't run preexec
 RUN rm /dockcross/pre_exec.sh
+
+# Stip is broken
+RUN rm /usr/bin/strip && ln -s /opt/llvm60/bin/llvm-objcopy /usr/bin/strip

@@ -155,4 +155,8 @@ ENV FFLAGS="-march=x86-64 -mtune=generic"
 # Don't run preexec
 RUN rm /dockcross/pre_exec.sh
 
+# Allow to run 32 bits binary
 RUN yum -y install glibc.i686 libgcc_s.so.1
+
+# Stip is broken
+RUN rm /usr/bin/strip && ln -s /opt/llvm60/bin/llvm-objcopy /usr/bin/strip
