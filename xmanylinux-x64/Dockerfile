@@ -101,6 +101,28 @@ RUN wget --no-check-certificate http://downloads.sourceforge.net/project/swig/sw
     && make -j4 && make install \
     && cd .. && rm -rf swig-3.0.12 && ldconfig
 
+# OpenMP
+ADD 0001-openmp-6.0.0.patch /tmp/0001-openmp-6.0.0.patch
+
+RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
+    && xz --decompress openmp-6.0.0.src.tar.xz && tar xf openmp-6.0.0.src.tar \
+    && rm openmp-6.0.0.src.tar \
+    && cd openmp-6.0.0.src \
+    && patch -p1 < /tmp/0001-openmp-6.0.0.patch \
+    && rm /tmp/0001-openmp-6.0.0.patch \
+    && mkdir cbuild && cd cbuild \
+    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 \
+    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
+    && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
+
+# XSD
+RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/x86_64/xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && tar xvf xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && rm xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
+    && cp -R xsd-4.0.0-x86_64-linux-gnu/bin/* /usr/bin \
+    && cp -R xsd-4.0.0-x86_64-linux-gnu/libxsd/* /usr/include \
+    && rm -rf xsd-4.0.0-x86_64-linux-gnu
+
 # Reset PATH
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib"
@@ -126,28 +148,7 @@ ENV AS=${CROSS_ROOT}/llvm-as \
 COPY Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
 
-# OpenMP
-ADD 0001-openmp-6.0.0.patch /tmp/0001-openmp-6.0.0.patch
-
-RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
-    && xz --decompress openmp-6.0.0.src.tar.xz && tar xf openmp-6.0.0.src.tar \
-    && rm openmp-6.0.0.src.tar \
-    && cd openmp-6.0.0.src \
-    && patch -p1 < /tmp/0001-openmp-6.0.0.patch \
-    && rm /tmp/0001-openmp-6.0.0.patch \
-    && mkdir cbuild && cd cbuild \
-    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 \
-    && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . -- -j4 && CXXFLAGS="-fPIC" CFLAGS="-fPIC" cmake --build . --target install \
-    && cd .. && cd .. && rm -rf openmp-6.0.0.src && ldconfig
-
-# XSD
-RUN wget --no-check-certificate https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/x86_64/xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
-    && tar xvf xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
-    && rm xsd-4.0.0-x86_64-linux-gnu.tar.bz2 \
-    && cp -R xsd-4.0.0-x86_64-linux-gnu/bin/* /usr/bin \
-    && cp -R xsd-4.0.0-x86_64-linux-gnu/libxsd/* /usr/include \
-    && rm -rf xsd-4.0.0-x86_64-linux-gnu
-
+# Flags
 ENV CFLAGS="-march=x86-64 -mtune=generic"
 ENV CXXFLAGS="-march=x86-64 -mtune=generic"
 ENV FFLAGS="-march=x86-64 -mtune=generic"
@@ -160,3 +161,12 @@ RUN yum -y install glibc.i686 libgcc_s.so.1
 
 # Stip is broken
 RUN rm /usr/bin/strip && ln -s /opt/llvm60/bin/llvm-objcopy /usr/bin/strip
+
+# Remove six from python
+RUN /opt/python/cp27-cp27m/bin/python -m pip uninstall -y six
+RUN /opt/python/cp27-cp27mu/bin/python -m pip uninstall -y six
+RUN /opt/python/cp34-cp34m/bin/python -m pip uninstall -y six
+RUN /opt/python/cp35-cp35m/bin/python -m pip uninstall -y six
+RUN /opt/python/cp36-cp36m/bin/python -m pip uninstall -y six
+RUN /opt/python/cp37-cp37m/bin/python -m pip uninstall -y six
+
