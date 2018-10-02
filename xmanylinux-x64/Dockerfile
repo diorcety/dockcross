@@ -160,7 +160,7 @@ RUN rm /dockcross/pre_exec.sh
 RUN yum -y install glibc.i686 libgcc_s.so.1
 
 # Stip is broken
-RUN rm /usr/bin/strip && ln -s /opt/llvm60/bin/llvm-objcopy /usr/bin/strip
+RUN rm /usr/bin/strip && ln -s /opt/rh/devtoolset-2/root/usr/bin/strip /usr/bin/strip
 
 # Remove six from python
 RUN /opt/python/cp27-cp27m/bin/python -m pip uninstall -y six
