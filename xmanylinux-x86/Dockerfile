@@ -39,15 +39,6 @@ RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
     && cd .. && cd .. && rm -rf lld-6.0.0.src && ldconfig
 
 # Missing base libraries and software
-RUN wget ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz \
-    && tar xvf libffi-3.2.1.tar.gz \
-    && rm libffi-3.2.1.tar.gz \
-    && cd libffi-3.2.1 \
-    && ./configure --prefix=/usr --libdir=/usr/lib --enable-static --disable-shared CFLAGS=-fPIC \
-    && make -j4 && make install \
-    && ln -s /usr/lib/libffi-3.2.1/include /usr/include/libffi \
-    && cd .. && rm -rf libffi-3.2.1 && ldconfig
-
 RUN yum install -y libX11-devel libXau-devel libXext-devel libXrender-devel
 
 RUN yum install -y libxslt
