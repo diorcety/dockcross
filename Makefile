@@ -16,7 +16,7 @@ BIN = ./bin
 STANDARD_IMAGES = linux-s390x android-arm android-arm64 linux-x86 linux-x64 linux-arm64 linux-armv5 linux-armv6 linux-armv7 linux-mips linux-mipsel linux-ppc64le windows-x86 windows-x64 windows-x64-posix
 
 # Generated Dockerfiles.
-GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
+GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 manylinux-shared-x86 manylinux-shared-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
 GEN_IMAGE_DOCKERFILES = $(addsuffix /Dockerfile,$(GEN_IMAGES))
 
 # These images are expected to have explicit rules for *both* build and testing
@@ -97,6 +97,16 @@ manylinux-x64: manylinux-x64/Dockerfile
 		-f manylinux-x64/Dockerfile .
 	rm -rf $@/imagefiles
 
+manylinux-shared-x64: manylinux-shared-x64/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/manylinux-shared-x64:latest \
+		--build-arg IMAGE=$(ORG)/manylinux-shared-x64 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f manylinux-shared-x64/Dockerfile .
+	rm -rf $@/imagefiles
+
 manylinux-x64.test: manylinux-x64
 	$(DOCKER) run $(RM) dockcross/manylinux-x64 > $(BIN)/dockcross-manylinux-x64 && chmod +x $(BIN)/dockcross-manylinux-x64
 	$(BIN)/dockcross-manylinux-x64 /opt/python/cp35-cp35m/bin/python test/run.py
@@ -113,6 +123,16 @@ manylinux-x86: manylinux-x86/Dockerfile
 		--build-arg VCS_URL=`git config --get remote.origin.url` \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		-f manylinux-x86/Dockerfile .
+	rm -rf $@/imagefiles
+
+manylinux-shared-x86: manylinux-shared-x86/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/manylinux-shared-x86:latest \
+		--build-arg IMAGE=$(ORG)/manylinux-shared-x86 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f manylinux-shared-x86/Dockerfile .
 	rm -rf $@/imagefiles
 
 manylinux-x86.test: manylinux-x86
