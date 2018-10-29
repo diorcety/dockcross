@@ -16,13 +16,13 @@ BIN = ./bin
 STANDARD_IMAGES = linux-s390x android-arm android-arm64 linux-x86 linux-x64 linux-arm64 linux-armv5 linux-armv6 linux-armv7 linux-mips linux-mipsel linux-ppc64le windows-x86 windows-x64 windows-x64-posix
 
 # Generated Dockerfiles.
-GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 manylinux-shared-x86 manylinux-shared-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
+GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 manylinux-shared-x86 manylinux-shared-x64 xmanylinux-x86 xmanylinux-x64 xmanylinux-shared-x86 xmanylinux-shared-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
 GEN_IMAGE_DOCKERFILES = $(addsuffix /Dockerfile,$(GEN_IMAGES))
 
 # These images are expected to have explicit rules for *both* build and testing
 NON_STANDARD_IMAGES = browser-asmjs manylinux-x64 manylinux-x86
 
-DOCKER_COMPOSITE_SOURCES = common.docker common.debian common.manylinux common.crosstool common.windows
+DOCKER_COMPOSITE_SOURCES = common.docker common.debian common.manylinux common.xmanylinux common.crosstool common.windows
 
 # This list all available images
 IMAGES = $(STANDARD_IMAGES) $(NON_STANDARD_IMAGES)
@@ -59,6 +59,7 @@ $(GEN_IMAGE_DOCKERFILES) Dockerfile: %Dockerfile: %Dockerfile.in $(DOCKER_COMPOS
 		-e '/common.docker/ r common.docker' \
 		-e '/common.debian/ r common.debian' \
 		-e '/common.manylinux/ r common.manylinux' \
+		-e '/common.xmanylinux/ r common.xmanylinux' \
 		-e '/common.crosstool/ r common.crosstool' \
 		-e '/common.windows/ r common.windows' \
 		$< > $@
@@ -97,6 +98,16 @@ manylinux-x64: manylinux-x64/Dockerfile
 		-f manylinux-x64/Dockerfile .
 	rm -rf $@/imagefiles
 
+xmanylinux-x64: xmanylinux-x64/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-x64:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-x64 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-x64/Dockerfile .
+	rm -rf $@/imagefiles
+
 manylinux-shared-x64: manylinux-shared-x64/Dockerfile
 	mkdir -p $@/imagefiles && cp -r imagefiles $@/
 	$(DOCKER) build -t $(ORG)/manylinux-shared-x64:latest \
@@ -105,6 +116,16 @@ manylinux-shared-x64: manylinux-shared-x64/Dockerfile
 		--build-arg VCS_URL=`git config --get remote.origin.url` \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		-f manylinux-shared-x64/Dockerfile .
+	rm -rf $@/imagefiles
+
+xmanylinux-shared-x64: xmanylinux-shared-x64/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-shared-x64:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-shared-x64 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-shared-x64/Dockerfile .
 	rm -rf $@/imagefiles
 
 manylinux-x64.test: manylinux-x64
@@ -125,6 +146,16 @@ manylinux-x86: manylinux-x86/Dockerfile
 		-f manylinux-x86/Dockerfile .
 	rm -rf $@/imagefiles
 
+xmanylinux-x86: xmanylinux-x86/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-x86:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-x86 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-x86/Dockerfile .
+	rm -rf $@/imagefiles
+
 manylinux-shared-x86: manylinux-shared-x86/Dockerfile
 	mkdir -p $@/imagefiles && cp -r imagefiles $@/
 	$(DOCKER) build -t $(ORG)/manylinux-shared-x86:latest \
@@ -133,6 +164,16 @@ manylinux-shared-x86: manylinux-shared-x86/Dockerfile
 		--build-arg VCS_URL=`git config --get remote.origin.url` \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		-f manylinux-shared-x86/Dockerfile .
+	rm -rf $@/imagefiles
+
+xmanylinux-shared-x86: xmanylinux-shared-x86/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-shared-x86:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-shared-x86 \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-shared-x86/Dockerfile .
 	rm -rf $@/imagefiles
 
 manylinux-x86.test: manylinux-x86
