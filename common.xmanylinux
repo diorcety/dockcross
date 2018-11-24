@@ -39,6 +39,16 @@ RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf lld-6.0.0.src && ldconfig
 
+RUN wget http://releases.llvm.org/6.0.0/clang-tools-extra-6.0.0.src.tar.xz \
+    && xz --decompress clang-tools-extra-6.0.0.src.tar.xz && tar xf clang-tools-extra-6.0.0.src.tar \
+    && clang-tools-extra-6.0.0.src \
+    && cd clang-tools-extra-6.0.0.src/clang-tidy \
+    && mkdir cbuild && cd cbuild \
+    && ARCH=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "i686" || echo "x86_64") \
+    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_DEFAULT_TARGET_TRIPLE=${ARCH}-unknown-linux-gnu \
+    && cmake --build . -- -j4 && cmake --build . --target install \
+    && cd .. && cd ../.. && rm -rf clang-tools-extra-6.0.0.src && ldconfig
+
 # Missing base libraries and software
 RUN yum install -y libX11-devel libXau-devel libXext-devel libXrender-devel
 
@@ -119,14 +129,14 @@ RUN URL=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "https://www.codesy
     && rm -rf ${BASE}
 
 # CppCheck
-RUN curl -OL https://github.com/diorcety/cppcheck/archive/1.85+x.tar.gz \
-    && tar xvf 1.85+x.tar.gz \
-    && rm 1.85+x.tar.gz \
-    && cd cppcheck-1.85-x \
+RUN curl -OL https://github.com/diorcety/cppcheck/archive/1.85.tar.gz \
+    && tar xvf 1.85.tar.gz \
+    && rm 1.85.tar.gz \
+    && cd cppcheck-1.85 \
     && mkdir cbuild && cd cbuild \
     && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/cppcheck \
     && cmake --build . -- -j4 && cmake --build . --target install \
-    && cd .. && cd .. && rm -rf cppcheck-1.85-x && ldconfig
+    && cd .. && cd .. && rm -rf cppcheck-1.85 && ldconfig
 
 # Sonar scanner
 RUN curl -OL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip \
