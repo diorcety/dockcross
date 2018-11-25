@@ -24,6 +24,10 @@ RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && xz --decompress cfe-6.0.0.src.tar.xz && tar xf cfe-6.0.0.src.tar \
     && rm cfe-6.0.0.src.tar \
     && cd cfe-6.0.0.src \
+    && wget http://releases.llvm.org/6.0.0/clang-tools-extra-6.0.0.src.tar.xz \
+    && xz --decompress clang-tools-extra-6.0.0.src.tar.xz && tar xf clang-tools-extra-6.0.0.src.tar \
+    && rm clang-tools-extra-6.0.0.src.tar \
+    && mv clang-tools-extra-6.0.0.src tools/extra \
     && mkdir cbuild && cd cbuild \
     && ARCH=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "i686" || echo "x86_64") \
     && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_DEFAULT_TARGET_TRIPLE=${ARCH}-unknown-linux-gnu \
@@ -38,16 +42,6 @@ RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
     && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf lld-6.0.0.src && ldconfig
-
-RUN wget http://releases.llvm.org/6.0.0/clang-tools-extra-6.0.0.src.tar.xz \
-    && xz --decompress clang-tools-extra-6.0.0.src.tar.xz && tar xf clang-tools-extra-6.0.0.src.tar \
-    && clang-tools-extra-6.0.0.src \
-    && cd clang-tools-extra-6.0.0.src/clang-tidy \
-    && mkdir cbuild && cd cbuild \
-    && ARCH=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "i686" || echo "x86_64") \
-    && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/llvm60 -DLLVM_TARGETS_TO_BUILD="X86" -DLLVM_DEFAULT_TARGET_TRIPLE=${ARCH}-unknown-linux-gnu \
-    && cmake --build . -- -j4 && cmake --build . --target install \
-    && cd .. && cd ../.. && rm -rf clang-tools-extra-6.0.0.src && ldconfig
 
 # Missing base libraries and software
 RUN yum install -y libX11-devel libXau-devel libXext-devel libXrender-devel
