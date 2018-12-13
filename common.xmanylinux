@@ -139,12 +139,12 @@ RUN curl -OL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/son
     && mv sonar-scanner-3.2.0.1227-linux /opt/sonar
 
 # Remove six from python
-RUN LD_LIBRARY_PATH=/opt/python/cp27-cp27m/lib /opt/python/cp27-cp27m/bin/python -m pip uninstall -y six
-RUN LD_LIBRARY_PATH=/opt/python/cp27-cp27mu/lib /opt/python/cp27-cp27mu/bin/python -m pip uninstall -y six
-RUN LD_LIBRARY_PATH=/opt/python/cp34-cp34m/lib /opt/python/cp34-cp34m/bin/python -m pip uninstall -y six
-RUN LD_LIBRARY_PATH=/opt/python/cp35-cp35m/lib /opt/python/cp35-cp35m/bin/python -m pip uninstall -y six
-RUN LD_LIBRARY_PATH=/opt/python/cp36-cp36m/lib /opt/python/cp36-cp36m/bin/python -m pip uninstall -y six
-RUN LD_LIBRARY_PATH=/opt/python/cp37-cp37m/lib /opt/python/cp37-cp37m/bin/python -m pip uninstall -y six
+RUN LD_LIBRARY_PATH=/opt/python/cp27-cp27m/lib /opt/python/cp27-cp27m/bin/python -m pip uninstall -y six pyparsing
+RUN LD_LIBRARY_PATH=/opt/python/cp27-cp27mu/lib /opt/python/cp27-cp27mu/bin/python -m pip uninstall -y six pyparsing
+RUN LD_LIBRARY_PATH=/opt/python/cp34-cp34m/lib /opt/python/cp34-cp34m/bin/python -m pip uninstall -y six pyparsing
+RUN LD_LIBRARY_PATH=/opt/python/cp35-cp35m/lib /opt/python/cp35-cp35m/bin/python -m pip uninstall -y six pyparsing
+RUN LD_LIBRARY_PATH=/opt/python/cp36-cp36m/lib /opt/python/cp36-cp36m/bin/python -m pip uninstall -y six pyparsing
+RUN LD_LIBRARY_PATH=/opt/python/cp37-cp37m/lib /opt/python/cp37-cp37m/bin/python -m pip uninstall -y six pyparsing
 
 # Stip is broken
 RUN rm /usr/bin/strip && ln -s /opt/rh/devtoolset-2/root/usr/bin/strip /usr/bin/strip
