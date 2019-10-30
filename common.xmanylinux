@@ -103,6 +103,12 @@ RUN cd /opt \
     && mv sbt sbt-1.3.0 \
     && rm sbt-1.3.0.tgz
 
+# Ant
+RUN cd /opt \
+    && wget --no-check-certificate http://mirrors.standaloneinstaller.com/apache//ant/binaries/apache-ant-1.10.7-bin.zip \
+    && unzip apache-ant-1.10.7-bin.zip \
+    && rm apache-ant-1.10.7-bin.zip
+
 # Swig
 RUN wget --no-check-certificate http://downloads.sourceforge.net/project/swig/swig/swig-3.0.12/swig-3.0.12.tar.gz \
     && tar xvf swig-3.0.12.tar.gz \
@@ -169,4 +175,3 @@ ENV LD_LIBRARY_PATH="/usr/local/$LIB_DIR:/usr/local/lib"
 
 # Don't run preexec
 RUN rm /dockcross/pre_exec.sh
-
