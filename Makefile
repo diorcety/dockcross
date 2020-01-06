@@ -16,7 +16,7 @@ BIN = ./bin
 STANDARD_IMAGES = linux-s390x android-arm android-arm64 linux-x86 linux-x64 linux-arm64 linux-armv5 linux-armv6 linux-armv7 linux-mips linux-mipsel linux-ppc64le windows-x86 windows-x64 windows-x64-posix
 
 # Generated Dockerfiles.
-GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 manylinux-shared-x86 manylinux-shared-x64 xmanylinux-x86 xmanylinux-x64 xmanylinux-shared-x86 xmanylinux-shared-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
+GEN_IMAGES = linux-s390x linux-mips manylinux-x86 manylinux-x64 manylinux-shared-x86 manylinux-shared-x64 xmanylinux-x86 xmanylinux-x64 xmanylinux-x86-nopy xmanylinux-x64-nopy xmanylinux-shared-x86 xmanylinux-shared-x64 browser-asmjs linux-arm64 windows-x86 windows-x64 windows-x64-posix linux-armv7 linux-armv5
 GEN_IMAGE_DOCKERFILES = $(addsuffix /Dockerfile,$(GEN_IMAGES))
 
 # These images are expected to have explicit rules for *both* build and testing
@@ -108,6 +108,16 @@ xmanylinux-x64: xmanylinux-x64/Dockerfile
 		-f xmanylinux-x64/Dockerfile .
 	rm -rf $@/imagefiles
 
+xmanylinux-x64-nopy: xmanylinux-x64-nopy/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-x64-nopy:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-x64-nopy \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-x64-nopy/Dockerfile .
+	rm -rf $@/imagefiles
+
 manylinux-shared-x64: manylinux-shared-x64/Dockerfile
 	mkdir -p $@/imagefiles && cp -r imagefiles $@/
 	$(DOCKER) build -t $(ORG)/manylinux-shared-x64:latest \
@@ -154,6 +164,16 @@ xmanylinux-x86: xmanylinux-x86/Dockerfile
 		--build-arg VCS_URL=`git config --get remote.origin.url` \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		-f xmanylinux-x86/Dockerfile .
+	rm -rf $@/imagefiles
+
+xmanylinux-x86-nopy: xmanylinux-x86-nopy/Dockerfile
+	mkdir -p $@/imagefiles && cp -r imagefiles $@/
+	$(DOCKER) build -t $(ORG)/xmanylinux-x86-nopy:latest \
+		--build-arg IMAGE=$(ORG)/xmanylinux-x86-nopy \
+		--build-arg VCS_REF=`git rev-parse --short HEAD` \
+		--build-arg VCS_URL=`git config --get remote.origin.url` \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		-f xmanylinux-x86-nopy/Dockerfile .
 	rm -rf $@/imagefiles
 
 manylinux-shared-x86: manylinux-shared-x86/Dockerfile

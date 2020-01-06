@@ -1,0 +1,41 @@
+FROM dockcross/manylinux-x64
+
+ENV DEFAULT_DOCKCROSS_IMAGE dockcross/xmanylinux-x64-nopy
+
+ARG LIB_DIR=lib64
+
+#include "common.xmanylinux"
+
+# Configure default environment
+ENV PATH="/opt/llvm60/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/opt/llvm60/lib:${LD_LIBRARY_PATH}"
+ENV JAVA_HOME="/opt/jdk8u202"
+ENV JRE_HOME="/opt/jdk8u202/jre"
+ENV PATH="/opt/jdk8u202/bin:/opt/jdk8u202/jre/bin:${PATH}"
+ENV PATH="/opt/apache-maven-3.3.9/bin:${PATH}"
+ENV PATH="/opt/gradle-4.10.2/bin:${PATH}"
+ENV PATH="/opt/sbt-1.3.0/bin:${PATH}"
+ENV PATH="/opt/apache-ant-1.10.7/bin:${PATH}"
+ENV PATH="/opt/cppcheck/bin:${PATH}"
+ENV PATH="/opt/sonar/bin:${PATH}"
+
+ENV CROSS_TRIPLE x86_64-linux-gnu
+ENV CROSS_ROOT /opt/llvm60/bin
+ENV AS=${CROSS_ROOT}/llvm-as \
+    AR=${CROSS_ROOT}/llvm-ar \
+    CC=${CROSS_ROOT}/clang \
+    CPP=${CROSS_ROOT}/clang-cpp \
+    CXX=${CROSS_ROOT}/clang++ \
+    LD=${CROSS_ROOT}/ld.lld \
+    LDFLAGS=-fuse-ld=lld
+COPY xmanylinux-x64-nopy/Toolchain.cmake ${CROSS_ROOT}/../lib/
+ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
+
+# Flags
+ENV CFLAGS="-march=x86-64 -mtune=generic"
+ENV CXXFLAGS="-march=x86-64 -mtune=generic"
+ENV FFLAGS="-march=x86-64 -mtune=generic"
+
+# Allow to run 32 bits binary
+RUN yum -y install glibc.i686 libgcc_s.so.1
+
