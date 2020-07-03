@@ -10,7 +10,7 @@ ENV PATH="/opt/python/cp27-cp27mu/bin/:${PATH}"
 ENV LD_LIBRARY_PATH="/opt/python/cp27-cp27mu/lib/:${LD_LIBRARY_PATH}"
 
 # LLVM & Clang
-RUN wget http://releases.llvm.org/6.0.0/llvm-6.0.0.src.tar.xz \
+RUN curl -OL https://releases.llvm.org/6.0.0/llvm-6.0.0.src.tar.xz \
     && xz --decompress llvm-6.0.0.src.tar.xz && tar xf llvm-6.0.0.src.tar \
     && rm llvm-6.0.0.src.tar \
     && cd llvm-6.0.0.src \
@@ -20,11 +20,11 @@ RUN wget http://releases.llvm.org/6.0.0/llvm-6.0.0.src.tar.xz \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf llvm-6.0.0.src && ldconfig
 
-RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
+RUN curl -OL https://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && xz --decompress cfe-6.0.0.src.tar.xz && tar xf cfe-6.0.0.src.tar \
     && rm cfe-6.0.0.src.tar \
     && cd cfe-6.0.0.src \
-    && wget http://releases.llvm.org/6.0.0/clang-tools-extra-6.0.0.src.tar.xz \
+    && curl -OL https://releases.llvm.org/6.0.0/clang-tools-extra-6.0.0.src.tar.xz \
     && xz --decompress clang-tools-extra-6.0.0.src.tar.xz && tar xf clang-tools-extra-6.0.0.src.tar \
     && rm clang-tools-extra-6.0.0.src.tar \
     && mv clang-tools-extra-6.0.0.src tools/extra \
@@ -34,7 +34,7 @@ RUN wget http://releases.llvm.org/6.0.0/cfe-6.0.0.src.tar.xz \
     && cmake --build . -- -j4 && cmake --build . --target install \
     && cd .. && cd .. && rm -rf cfe-6.0.0.src && ldconfig
 
-RUN wget http://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
+RUN curl -OL https://releases.llvm.org/6.0.0/lld-6.0.0.src.tar.xz \
     && xz --decompress lld-6.0.0.src.tar.xz && tar xf lld-6.0.0.src.tar \
     && rm lld-6.0.0.src.tar \
     && cd lld-6.0.0.src \
@@ -48,7 +48,7 @@ RUN yum install -y libX11-devel libXau-devel libXext-devel libXrender-devel libX
 
 RUN yum install -y libxslt
 
-RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/xcb-proto-1.7.1.tar.gz \
+RUN curl -OL https://xcb.freedesktop.org/dist/xcb-proto-1.7.1.tar.gz \
     && tar xvf xcb-proto-1.7.1.tar.gz \
     && rm xcb-proto-1.7.1.tar.gz \
     && cd xcb-proto-1.7.1 \
@@ -56,7 +56,7 @@ RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/xcb-proto-1.7.1
     && make -j4 && make install \
     && cd .. && rm -rf xcb-proto-1.7.1 && ldconfig
 
-RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/libpthread-stubs-0.3.tar.gz \
+RUN curl -OL https://xcb.freedesktop.org/dist/libpthread-stubs-0.3.tar.gz \
     && tar xvf libpthread-stubs-0.3.tar.gz \
     && rm libpthread-stubs-0.3.tar.gz \
     && cd libpthread-stubs-0.3 \
@@ -64,7 +64,7 @@ RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/libpthread-stub
     && make -j3 && make install \
     && cd .. && rm -rf libpthread-stubs-0.3 && ldconfig
 
-RUN wget --no-check-certificate https://xcb.freedesktop.org/dist/libxcb-1.8.1.tar.gz \
+RUN curl -OL https://xcb.freedesktop.org/dist/libxcb-1.8.1.tar.gz \
     && tar xvf libxcb-1.8.1.tar.gz \
     && rm libxcb-1.8.1.tar.gz \
     && cd libxcb-1.8.1 \
@@ -79,25 +79,25 @@ RUN yum -y install pcre-devel
 # Java
 RUN cd /opt/ \
     && URL=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "https://download.bell-sw.com/java/8u202/bellsoft-jdk8u202-linux-i586.tar.gz" || echo "https://download.bell-sw.com/java/8u202/bellsoft-jdk8u202-linux-amd64.tar.gz") \
-    && wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" "${URL}" -O jdk-8u202-linux.tar.gz \
+    && curl -L "${URL}" --output jdk-8u202-linux.tar.gz \
     && tar xzf jdk-8u202-linux.tar.gz --no-same-owner --no-same-permissions \
     && chmod 755 jdk8u202 \
     && rm jdk-8u202-linux.tar.gz
 
 # Maven
 RUN cd /opt \
-    && wget --no-check-certificate http://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
+    && curl -OL https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.tar.gz \
     && tar xzf apache-maven-3.3.9-bin.tar.gz \
     && rm apache-maven-3.3.9-bin.tar.gz
 
 # Ant
 RUN cd /opt \
-    && wget --no-check-certificate http://mirrors.standaloneinstaller.com/apache//ant/binaries/apache-ant-1.10.7-bin.zip \
-    && unzip apache-ant-1.10.7-bin.zip \
-    && rm apache-ant-1.10.7-bin.zip
+    && curl -OL https://mirror.ibcp.fr/pub/apache//ant/binaries/apache-ant-1.10.8-bin.tar.gz \
+    && tar xzf apache-ant-1.10.8-bin.tar.gz \
+    && rm apache-ant-1.10.8-bin.tar.gz
 
 # Swig
-RUN wget --no-check-certificate http://downloads.sourceforge.net/project/swig/swig/swig-3.0.12/swig-3.0.12.tar.gz \
+RUN curl -OL https://downloads.sourceforge.net/project/swig/swig/swig-3.0.12/swig-3.0.12.tar.gz \
     && tar xvf swig-3.0.12.tar.gz \
     && rm swig-3.0.12.tar.gz \
     && cd swig-3.0.12 \
@@ -122,7 +122,7 @@ RUN wget http://releases.llvm.org/6.0.0/openmp-6.0.0.src.tar.xz \
 # XSD
 RUN URL=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/i686/xsd-4.0.0-i686-linux-gnu.tar.bz2" || echo "https://www.codesynthesis.com/download/xsd/4.0/linux-gnu/x86_64/xsd-4.0.0-x86_64-linux-gnu.tar.bz2") \
     && BASE=$([[ "$DEFAULT_DOCKCROSS_IMAGE" = *"-x86" ]] && echo "xsd-4.0.0-i686-linux-gnu" || echo "xsd-4.0.0-x86_64-linux-gnu") \
-    && wget --no-check-certificate ${URL} \
+    && curl -OL ${URL} \
     && tar xvf ${BASE}.tar.bz2 \
     && rm ${BASE}.tar.bz2 \
     && cp -R ${BASE}/bin/* /usr/bin \
