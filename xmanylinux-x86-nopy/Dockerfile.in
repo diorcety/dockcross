@@ -30,7 +30,7 @@ COPY xmanylinux-x86-nopy/Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm60/lib/Toolchain.cmake"
 
 # Flags
-ENV CFLAGS="-march=x86-64 -mtune=generic"
-ENV CXXFLAGS="-march=x86-64 -mtune=generic"
-ENV FFLAGS="-march=x86-64 -mtune=generic"
+ENV CFLAGS="-march=i686 -mtune=generic"
+ENV CXXFLAGS="-march=i686 -mtune=generic"
+ENV FFLAGS="-march=i686 -mtune=generic"
 
