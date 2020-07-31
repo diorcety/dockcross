@@ -117,6 +117,9 @@ RUN LD_LIBRARY_PATH=/opt/python/cp36-cp36m/lib /opt/python/cp36-cp36m/bin/python
 RUN LD_LIBRARY_PATH=/opt/python/cp37-cp37m/lib /opt/python/cp37-cp37m/bin/python -m pip uninstall -y six pyparsing
 RUN LD_LIBRARY_PATH=/opt/python/cp38-cp38m/lib /opt/python/cp38-cp38/bin/python -m pip uninstall -y six pyparsing
 
+# Stip is broken
+RUN rm /usr/bin/strip && ln -s /opt/llvm100/bin/llvm-strip /usr/bin/strip
+
 # Reset PATH
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV LD_LIBRARY_PATH="/usr/local/$LIB_DIR:/usr/local/lib"
