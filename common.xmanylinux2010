@@ -100,6 +100,12 @@ RUN curl -OL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/son
     && rm sonar-scanner-cli-3.2.0.1227-linux.zip \
     && mv sonar-scanner-3.2.0.1227-linux /opt/sonar
 
+# DependencyCheck
+RUN curl -OL http://srv-git/downloads/tools/dependency-check-5.3.2+x-release.zip \
+    && unzip dependency-check-5.3.2+x-release.zip \
+    && rm dependency-check-5.3.2+x-release.zip \
+    && mv dependency-check /opt/dependency-check
+
 # Ruby
 RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
 RUN curl -sSL https://get.rvm.io | bash -s stable --ruby || true

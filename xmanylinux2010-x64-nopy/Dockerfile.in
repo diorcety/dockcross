@@ -17,6 +17,7 @@ ENV PATH="/opt/apache-ant-1.10.7/bin:${PATH}"
 ENV PATH="/usr/local/rvm/gems/ruby-2.2.1/wrappers:${PATH}"
 ENV PATH="/opt/cppcheck/bin:${PATH}"
 ENV PATH="/opt/sonar/bin:${PATH}"
+ENV PATH="/opt/dependency-check/bin:${PATH}"
 
 ENV CROSS_TRIPLE x86_64-linux-gnu
 ENV CROSS_ROOT /opt/llvm100/bin
