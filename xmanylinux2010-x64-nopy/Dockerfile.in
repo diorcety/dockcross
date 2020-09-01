@@ -31,11 +31,6 @@ ENV AS=${CROSS_ROOT}/llvm-as \
 COPY xmanylinux2010-x64-nopy/Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm100/lib/Toolchain.cmake"
 
-# Flags
-ENV CFLAGS="-march=x86-64 -mtune=generic"
-ENV CXXFLAGS="-march=x86-64 -mtune=generic"
-ENV FFLAGS="-march=x86-64 -mtune=generic"
-
 # Allow to run 32 bits binary
 RUN yum -y install glibc.i686 libgcc_s.so.1
 

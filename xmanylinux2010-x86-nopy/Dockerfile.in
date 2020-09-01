@@ -31,8 +31,3 @@ ENV AS=${CROSS_ROOT}/llvm-as \
 COPY xmanylinux2010-x86-nopy/Toolchain.cmake ${CROSS_ROOT}/../lib/
 ENV CMAKE_TOOLCHAIN_FILE="/opt/llvm100/lib/Toolchain.cmake"
 
-# Flags
-ENV CFLAGS="-march=i686 -mtune=generic"
-ENV CXXFLAGS="-march=i686 -mtune=generic"
-ENV FFLAGS="-march=i686 -mtune=generic"
-
